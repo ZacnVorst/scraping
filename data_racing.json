@@ -1,17 +1,17 @@
 [
     {
         "NO": 1,
-        "JUDUL UPDATE / BERITA": "December 18, 2025 Patch Notes",
-        "SUMBER": "Racing Master"
+        "JUDUL": "December 18, 2025 Patch Notes",
+        "LINK": "javascript:;"
     },
     {
         "NO": 2,
-        "JUDUL UPDATE / BERITA": "Racing Master 2025 Legendary Cup Rules",
-        "SUMBER": "Racing Master"
+        "JUDUL": "Racing Master 2025 Legendary Cup Rules",
+        "LINK": "javascript:;"
     },
     {
         "NO": 3,
-        "JUDUL UPDATE / BERITA": "Terms of Use and Privacy Policy",
-        "SUMBER": "Racing Master"
+        "JUDUL": "Terms of Use and Privacy Policy",
+        "LINK": "https://protocol.unisdk.easebar.com/release/latest_v487.html"
     }
 ]
