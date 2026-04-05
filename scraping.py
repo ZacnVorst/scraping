@@ -7,69 +7,62 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from webdriver_manager.chrome import ChromeDriverManager
 
-# Konfigurasi Browser
+# Setup Chrome
 chrome_options = Options()
 chrome_options.add_argument("--headless")
 chrome_options.add_argument("--no-sandbox")
 
 driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
 
-def auto_scroll():
-    # Scroll sampai bawah agar semua berita muncul
-    last_height = driver.execute_script("return document.body.scrollHeight")
-    
-    while True:
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-        time.sleep(2)
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        
-        if new_height == last_height:
-            break
-        last_height = new_height
-
-def scrape_dan_tampilkan():
-    url = "https://www.racingmaster.game/sea/"
-    data_list = []
+def scrape_mobil():
+    url = "https://racingmaster.info/cars/"
+    data = []
 
     try:
-        print(f"Mengakses {url}...")
+        print("Membuka halaman mobil...")
         driver.get(url)
         time.sleep(5)
 
-        # Scroll supaya semua berita muncul
-        auto_scroll()
+        # Ambil semua baris tabel
+        rows = driver.find_elements(By.XPATH, "//table//tr")
 
-        elements = driver.find_elements(By.TAG_NAME, "a")
-
-        seen = set()
         no = 1
+        for row in rows[1:]:  # skip header
+            cols = row.find_elements(By.TAG_NAME, "td")
 
-        for el in elements:
-            text = el.text.strip()
-            link = el.get_attribute("href")
+            if len(cols) >= 12:
+                car_class = cols[0].text
+                car_name = cols[1].text
+                hp = cols[2].text
+                kg = cols[4].text
+                grip = cols[6].text
+                acc = cols[8].text
+                brake = cols[10].text
 
-            if len(text) > 20 and link and text not in seen:
-                data_list.append({
+                data.append({
                     "NO": no,
-                    "JUDUL": text,
-                    "LINK": link
+                    "CLASS": car_class,
+                    "NAMA MOBIL": car_name,
+                    "HP": hp,
+                    "BERAT(KG)": kg,
+                    "GRIP": grip,
+                    "ACC": acc,
+                    "BRAKE": brake
                 })
-                seen.add(text)
                 no += 1
 
-        # Simpan ke JSON
-        with open("data_racing.json", "w", encoding="utf-8") as f:
-            json.dump(data_list, f, indent=4, ensure_ascii=False)
+        # Simpan JSON
+        with open("data_mobil.json", "w", encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
 
         # Tampilkan tabel
-        if data_list:
-            print("\n" + "="*100)
-            print(" HASIL SCRAPING RACING MASTER ".center(100))
-            print("="*100)
-            print(tabulate(data_list, headers="keys", tablefmt="grid", maxcolwidths=[5, 50, 40]))
-            print(f"\nTotal data: {len(data_list)}")
-        else:
-            print("Tidak ada data ditemukan")
+        print("\n" + "="*110)
+        print("DATA MOBIL RACING MASTER".center(110))
+        print("="*110)
+        print(tabulate(data, headers="keys", tablefmt="grid"))
+
+        print(f"\nTotal mobil: {len(data)}")
+        print("Data disimpan ke data_mobil.json")
 
     except Exception as e:
         print("Error:", e)
@@ -78,4 +71,4 @@ def scrape_dan_tampilkan():
         driver.quit()
 
 if __name__ == "__main__":
-    scrape_dan_tampilkan()
+    scrape_mobil()
